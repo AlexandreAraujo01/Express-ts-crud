@@ -74,7 +74,7 @@ Clone o repositório:
 bash
 Copy
 Edit
-git clone https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
+git clone https://github.com/AlexandreAraujo01/Express-ts-crud.git
 cd SEU_REPOSITORIO
 Instale as dependências:
 
