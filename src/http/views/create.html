@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Cadastrar Jogo</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    crossorigin="anonymous"
+  />
 </head>
 <body class="container py-4">
   <h1>Novo Jogo</h1>
-  <form action="/api/jogo" id="form-jogo" method="POST">
+  <form id="form-jogo" novalidate>
     <div class="form-group">
       <label>Nome</label>
-      <input type="text" name="nome" class="form-control" required>
+      <input type="text" name="nome" class="form-control" required />
     </div>
     <div class="form-group">
       <label>Descrição</label>
@@ -18,63 +22,102 @@
     </div>
     <div class="form-group">
       <label>Produtora</label>
-      <input type="text" name="produtora" class="form-control" required>
+      <input type="text" name="produtora" class="form-control" required />
     </div>
     <div class="form-group">
       <label>Idade Mínima</label>
-      <input type="number" name="idadeMinima" class="form-control" required>
+      <input type="number" name="idadeMinima" class="form-control" required />
     </div>
     <div class="form-group">
       <label>Ano</label>
-      <input type="number" name="ano" class="form-control" required>
+      <input type="number" name="ano" class="form-control" required />
     </div>
     <button type="submit" class="btn btn-success">Salvar</button>
     <a href="/" class="btn btn-secondary">Voltar</a>
   </form>
 
-  <!-- jQuery Validation -->
-  <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.5/jquery.validate.min.js"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- jQuery Validation Plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
 
   <script>
-    const form = document.getElementById('form-jogo');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault(); // evita o submit tradicional e recarregar a página
-
-      const formData = new FormData(form);
-
-      // transforma FormData em objeto JSON
-      const data = {};
-      formData.forEach((value, key) => {
-        if (key === 'ano' || key === 'idadeMinima') {
-          data[key] = Number(value);
-        } else {
-          data[key] = value;
-        }
-      });
-
-      try {
-        const res = await fetch('/api/jogo', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
+    $(document).ready(function () {
+      $("#form-jogo").validate({
+        rules: {
+          nome: "required",
+          descricao: "required",
+          produtora: "required",
+          idadeMinima: {
+            required: true,
+            number: true,
+            min: 0,
           },
-          body: JSON.stringify(data)
-        });
+          ano: {
+            required: true,
+            number: true,
+            min: 1950,
+          },
+        },
+        messages: {
+          nome: "Informe o nome",
+          descricao: "Informe a descrição",
+          produtora: "Informe a produtora",
+          idadeMinima: {
+            required: "Informe a idade mínima",
+            number: "Apenas números",
+            min: "Valor inválido",
+          },
+          ano: {
+            required: "Informe o ano",
+            number: "Apenas números",
+            min: "Ano inválido",
+          },
+        },
+        errorClass: "text-danger",
+        onkeyup: function (element) {
+          $(element).valid();
+        },
+        onfocusout: function (element) {
+          $(element).valid();
+        },
+        submitHandler: async function (form) {
+          const formData = $(form).serializeArray();
+          const data = {};
+          formData.forEach(({ name, value }) => {
+            if (name === "ano" || name === "idadeMinima") {
+              data[name] = Number(value);
+            } else {
+              data[name] = value;
+            }
+          });
 
-        if (res.ok) {
-          alert('Jogo cadastrado com sucesso!');
-          window.location.href = '/'; // redireciona para lista
-        } else {
-          const errorData = await res.json();
-          alert('Erro ao cadastrar: ' + JSON.stringify(errorData));
-        }
-      } catch (error) {
-        alert('Erro ao cadastrar');
-        console.error(error);
-      }
+          try {
+            const res = await fetch("/api/jogo", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-frontend-secret":
+                  "express-token-secret-only-access-thru-front-end",
+              },
+              body: JSON.stringify(data),
+            });
+
+            if (res.ok) {
+              alert("Jogo cadastrado com sucesso!");
+              form.reset();
+            } else {
+              const errorData = await res.json();
+              alert("Erro ao cadastrar: " + JSON.stringify(errorData));
+            }
+          } catch (error) {
+            alert("Erro ao cadastrar");
+            console.error(error);
+          }
+        },
+      });
     });
-   </script>
-
+  </script>
 </body>
 </html>

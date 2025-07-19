@@ -30,9 +30,14 @@
 <script>
   async function carregarJogos() {
     try {
-      const res = await fetch('/api/jogo');
+      const res = await fetch('/api/jogo', {
+        method: 'GET',
+        headers: {
+          'x-frontend-secret': 'express-token-secret-only-access-thru-front-end'
+        }
+      });
+
       const jogos = await res.json();
-      console.log(jogos);
 
       if (!Array.isArray(jogos)) {
         console.error('ERRO: "jogos" não é um array');
@@ -74,6 +79,9 @@
       try {
         const res = await fetch(`/api/jogo/${jogoId}`, {
           method: 'DELETE',
+          headers: {
+          'x-frontend-secret': 'express-token-secret-only-access-thru-front-end'
+        }
         });
         if (res.ok) {
           alert('Jogo excluído com sucesso!');

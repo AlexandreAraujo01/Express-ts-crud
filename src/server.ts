@@ -3,6 +3,7 @@ import { jogosRouter } from './http/routes/jogos-router';
 import path from 'node:path';
 import { pagesRouter } from './http/routes/pages-router';
 import cors from 'cors';
+import { verifyFrontendSecret } from './http/middlewares/verifica-front-end-secret';
 
 
 const app = express();
@@ -15,10 +16,11 @@ app.use(cors({
 }));
 
 //Routes
-app.use('/api', jogosRouter)
+app.use('/api', verifyFrontendSecret, jogosRouter);
+
 app.use('/', pagesRouter)
 
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health',verifyFrontendSecret, (req: Request, res: Response) => {
   res.status(200).send("Ok")
 });
 
