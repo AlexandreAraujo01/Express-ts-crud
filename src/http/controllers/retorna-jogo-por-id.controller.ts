@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { RetornaJogoPorIdUseCase } from "../../domain/use-cases/retorna-jogo-por-id-use-case";
-import { IRetornaJogo } from "../../types/retorna-jogo.dto";
+import { IRetornaJogo, IRetornaJogoZodSchema } from "../../types/retorna-jogo.dto";
 
 export class RetornaJogoPorIdController {
   private constructor(private retornaJogoPorIdUseCase: RetornaJogoPorIdUseCase){}
@@ -14,12 +14,12 @@ export class RetornaJogoPorIdController {
     return this.instance
   }
 
-  async handle(req: Request<IRetornaJogo>, res: Response){
-    const { id } = req.params
+  async handle(req: Request, res: Response){
+    const { id } = req.params as unknown as IRetornaJogoZodSchema
     const jogo = await this.retornaJogoPorIdUseCase.execute(Number(id))
     if(!jogo){
       return res.status(400).send({"message": "Id invalido!"})
     }
-    return res.status(200).send({ jogo })
+    return res.status(200).send(jogo)
   }
 }

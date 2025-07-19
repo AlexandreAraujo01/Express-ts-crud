@@ -1,7 +1,8 @@
-import { Prisma, PrismaClient } from "../../generated/prisma";
-import { CriaLogService } from "../../services/cria-log-service";
-import { prismaService } from "../../services/prisma-service";
-import { Acao } from "../../types/acoes-log";
+import { PrismaClient } from "../../../generated/prisma";
+import { CriaLogService } from "../../../services/cria-log-service";
+import { prismaService } from "../../../services/prisma-service";
+import { Acao } from "../../../types/acoes-log";
+
 
 export class ExcluiJogoUseCase {
   private constructor(private prisma: PrismaClient, private criaLogService: CriaLogService){}

@@ -14,8 +14,8 @@ export class ExcluiJogoController {
     return this.instance
   }
 
-  async handle(req: Request<IRetornaJogo>, res: Response){
-    const { id } = req.params
+  async handle(req: Request, res: Response){
+    const { id } = req.params as unknown as IRetornaJogo
     const boolean = await this.excluiJogoUseCase.execute(Number(id))
     if(!boolean){
       return res.status(400).send({"message": "Id invalido!"})

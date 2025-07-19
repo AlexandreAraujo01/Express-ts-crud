@@ -15,6 +15,6 @@ export class RetornaJogosController {
 
     async handle(req: Request, res: Response){
       const games = await this.retornaJogosUseCase.execute()
-      res.status(200).send({ games })
+      res.status(200).send(games)
     }
 }

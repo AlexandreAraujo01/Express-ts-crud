@@ -1,8 +1,8 @@
-import { PrismaClient } from "../../generated/prisma";
-import { CriaLogService } from "../../services/cria-log-service";
-import { prismaService } from "../../services/prisma-service";
-import { Acao } from "../../types/acoes-log";
-import { IJogo } from "../../types/cria-jogo.dto";
+import { PrismaClient } from "../../../generated/prisma"
+import { CriaLogService } from "../../../services/cria-log-service"
+import { prismaService } from "../../../services/prisma-service"
+import { Acao } from "../../../types/acoes-log"
+import { IJogo } from "../../../types/cria-jogo.dto"
 
 export class RetornaJogosUseCase {
   private constructor(private prisma: PrismaClient, private criaLogService: CriaLogService){}

@@ -28,3 +28,5 @@ export const zodJogoObject = z.object({
 
 export const zodNovoJogoObject = zodJogoObject.omit({ id: true });
 
+
+

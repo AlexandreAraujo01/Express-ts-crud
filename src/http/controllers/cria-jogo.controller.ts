@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { CriaJogoUseCase } from "../../domain/use-cases/cria-jogo-use-case";
-import { IJogo, zodJogoObject, zodNovoJogoObject } from "../../types/cria-jogo.dto";
-import z from "zod";
+import { INovoJogo } from "../../types/cria-jogo.dto";
 
 export class CriaJogoController {
   private constructor(private criaJogoUseCase: CriaJogoUseCase){}
@@ -15,11 +14,8 @@ export class CriaJogoController {
   }
 
   async handle(req: Request, res: Response){
-      const jogo = z.safeParse(zodNovoJogoObject, req.body)
-      if(!jogo.success){
-        return res.status(400).send(jogo.error.message)
-      }
-      await this.criaJogoUseCase.execute(jogo.data)
+      const jogo = req.body as unknown as INovoJogo
+      await this.criaJogoUseCase.execute(jogo)
       res.status(201).send()
   }
 

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Jogos Cadastrados</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+</head>
+<body class="container py-4">
+  <h1 class="text-center">Lista de Jogos</h1>
+  <h6 class="text-muted text-center">registre os jogos que marcaram sua vida..</h6>
+  <a href="registrar" class="btn btn-primary mb-3">Novo Jogo</a>
+
+  <table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+      <tr>
+        <th>Nome</th>
+        <th>Descrição</th>
+        <th>Produtora</th>
+        <th>Idade mínima</th>
+        <th>Ano</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="jogos-tbody"></tbody>
+  </table>
+
+
+
+
+<script>
+  async function carregarJogos() {
+    try {
+      const res = await fetch('/api/jogo');
+      const jogos = await res.json();
+      console.log(jogos);
+
+      if (!Array.isArray(jogos)) {
+        console.error('ERRO: "jogos" não é um array');
+        return;
+      }
+
+      const tbody = document.getElementById('jogos-tbody');
+      tbody.innerHTML = '';
+
+      jogos.forEach(jogo => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${jogo.nome}</td>
+          <td>${jogo.descricao}</td>
+          <td>${jogo.produtora}</td>
+          <td>${jogo.idadeMinima}</td>
+          <td>${jogo.ano}</td>
+          <td>
+            <a href="/edit/${jogo.id}" class="btn btn-warning btn-sm">Editar</a>
+            <button class="btn btn-danger btn-sm btn-excluir" data-id="${jogo.id}">Excluir</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  window.onload = carregarJogos;
+</script>
+
+
+<script>
+  document.addEventListener('click', async (event) => {
+  if (event.target.matches('.btn-excluir')) {
+    const jogoId = event.target.getAttribute('data-id');
+    if (confirm('Deseja excluir este jogo?')) {
+      try {
+        const res = await fetch(`/api/jogo/${jogoId}`, {
+          method: 'DELETE',
+        });
+        if (res.ok) {
+          alert('Jogo excluído com sucesso!');
+          carregarJogos(); // Recarrega a lista
+        } else {
+          alert('Erro ao excluir o jogo');
+        }
+      } catch (error) {
+        alert('Erro ao excluir o jogo');
+        console.error(error);
+      }
+    }
+  }
+});
+
+</script>
+
+</body>
+</html>

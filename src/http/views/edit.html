@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Jogo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+</head>
+<body class="container py-4">
+  <h1>Editar Jogo</h1>
+  <form id="form-jogo">
+    <div class="form-group">
+      <label>Nome</label>
+      <input type="text" name="nome" id="nome" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label>Descrição</label>
+      <textarea name="descricao" id="descricao" class="form-control" required></textarea>
+    </div>
+    <div class="form-group">
+      <label>Produtora</label>
+      <input type="text" name="produtora" id="produtora" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label>Idade Minima</label>
+      <input type="number" name="idadeMinima" id="idadeMinima" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label>Ano</label>
+      <input type="number" name="ano" id="ano" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Atualizar</button>
+    <a href="/" class="btn btn-secondary">Cancelar</a>
+  </form>
+</body>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- jQuery Validation Plugin -->
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
+
+<script>
+  let jogoId = null;
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    $("#form-jogo").validate({ // ⚠️ dentro do DOMContentLoaded
+      rules: {
+        nome: "required",
+        descricao: "required",
+        produtora: "required",
+        idadeMinima: {
+          required: true,
+          number: true,
+          min: 0
+        },
+        ano: {
+          required: true,
+          number: true,
+          min: 1950
+        }
+      },
+      messages: {
+        nome: "Informe o nome",
+        descricao: "Informe a descrição",
+        produtora: "Informe a produtora",
+        idadeMinima: {
+          required: "Informe a idade mínima",
+          number: "Apenas números",
+          min: "Valor inválido"
+        },
+        ano: {
+          required: "Informe o ano",
+          number: "Apenas números",
+          min: "Ano inválido"
+        }
+      },
+      errorClass: "text-danger"
+    });
+
+    jogoId = window.location.pathname.split('/').pop();
+
+    try {
+      const res = await fetch(`/api/jogo/${jogoId}`);
+      if (!res.ok) throw new Error('Erro ao buscar jogo');
+      const jogo = await res.json();
+
+      $('#nome').val(jogo.nome);
+      $('#descricao').val(jogo.descricao);
+      $('#produtora').val(jogo.produtora);
+      $('#idadeMinima').val(jogo.idadeMinima);
+      $('#ano').val(jogo.ano);
+    } catch (error) {
+      alert('Erro ao carregar os dados do jogo.');
+      console.error(error);
+    }
+  });
+
+  $('#form-jogo').on('submit', async function (event) {
+    event.preventDefault();
+
+    if (!$(this).valid()) return;
+
+    const data = {
+      id: Number(jogoId),
+      nome: $('#nome').val(),
+      descricao: $('#descricao').val(),
+      produtora: $('#produtora').val(),
+      idadeMinima: Number($('#idadeMinima').val()),
+      ano: Number($('#ano').val())
+    };
+
+    try {
+      const res = await fetch('/api/jogo', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (!res.ok) throw new Error('Erro ao atualizar');
+      alert('Jogo atualizado com sucesso!');
+      window.location.href = '/';
+    } catch (error) {
+      alert('Erro ao atualizar o jogo.');
+      console.error(error);
+    }
+  });
+</script>
+
+</html>
